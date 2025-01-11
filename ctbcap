@@ -5,8 +5,8 @@
 # A simple webcam capturer for CB & SC.
 #
 
-CTBCAP_VERSION=3.0
-CTBCAP_RELEASE=4
+CTBCAP_VERSION=4.0
+CTBCAP_RELEASE=1
 
 # Command Options > Environment Variables > Default Arguments
 defaulting_args() {
@@ -44,9 +44,8 @@ defaulting_args() {
 }
 
 doc() {
-	case "$1" in
+	case $1 in
 	neon)
-		echo
 		# Multi-line message should not be larger than 55 columns per line:
 		#     ↓                     55 columns                      ↓
 		echo "8=====================================================D"
@@ -56,7 +55,6 @@ doc() {
 		echo "                        v${CTBCAP_VERSION}-r${CTBCAP_RELEASE}"
 		echo "8=====================================================D"
 		echo "              Simping Stream from CB & SC"
-		echo
 	;;
 	help)
 		echo "Usage: ctbcap [options...] <username|url>"
@@ -111,21 +109,27 @@ doc() {
 		echo "operations. If you like this toy, please visit the"
 		echo "official REPO to Star/Fork, Issue/PR are also open."
 		echo "<https://github.com/KFERMercer/chaturbate-grabber>"
-		echo
 	;;
 	ver)
-		echo "Chaturbate-Grabber (aka CtbCap) v${CTBCAP_VERSION}-r${CTBCAP_RELEASE}."
+		printf "ctbcap/${CTBCAP_VERSION}-r${CTBCAP_RELEASE} "
+		printf "Copyright (C) 2019-2025 KFERMercer <https://github.com/KFERMercer>\n"
 		echo
-		echo "System Time: $(date)"
+		echo "Time-Mark: [$(date "+%Y%m%d-%H%M%S")] ($(date "+%Z"))"
 		echo
-		echo "We defend the ideals of Communism and Anarky, Believe"
-		echo "the transmission of knowledge and information cannot"
-		echo "receive any perceived impediment."
-		echo
-		echo "Copyright (C) 2019-, KFERMercer <github.com/KFERMercer>"
+		echo "USERINFO: [$(id)]"
 		echo
 		echo "UA: ${UA}"
 		echo
+		printf "cURL: "
+		printf "$(command -v "curl" 1>/dev/null 2>&1 || echo "N/A")"
+		printf "$(curl -V 2>/dev/null | head -n 1 | grep -oE '[0-9][^ ]+' | head -n 1)\n"
+		echo
+		printf "FFmpeg: "
+		printf "$(command -v "ffmpeg" 1>/dev/null 2>&1 || echo "N/A")"
+		printf "$(ffmpeg -version 2>/dev/null | head -n 1 | grep -oE '[0-9][^ ]+' | head -n 1)\n"
+		echo
+		echo
+		echo "See [ $0 -h ] for Command Help."
 	;;
 	esac
 }
@@ -141,11 +145,9 @@ genesis_juicer() {
 	}
 	while getopts ':c:def:hlo:p:v' OPT; do
 		case ${OPT} in
-		c) 
+		c)
 			[ "$(echo "${OPTARG}" | cut -c1)" = "-" ] && {
-				echo "(ERROR) No Cut Time Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
+				echo "(ERROR) -c: No Cut Time Specified!" >&2
 				return 1
 			}
 			CUT_TIME=${OPTARG}
@@ -154,29 +156,23 @@ genesis_juicer() {
 		e) EDGING_MODE=1 ;;
 		f)
 			[ "$(echo "${OPTARG}" | cut -c1)" = "-" ] && {
-				echo "(ERROR) No Recording Saving Path Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
+				echo "(ERROR) -f: No Recording Saving Path Specified!" >&2
 				return 1
 			}
 			SAVE_PATH=${OPTARG}
 		;;
-		h) doc help && return 2 ;;
+		h) doc help; return 2 ;;
 		l) LINK_MODE=1 ;;
 		o)
 			[ "$(echo "${OPTARG}" | cut -c1)" = "-" ] && {
-				echo "(ERROR) No Log Saving Path Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
+				echo "(ERROR) -o: No Log Saving Path Specified!" >&2
 				return 1
 			}
 			LOG_PATH=${OPTARG}
 		;;
 		p)
 			[ "$(echo "${OPTARG}" | cut -c1)" = "-" ] && {
-				echo "(ERROR) No Cut Time Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
+				echo "(ERROR) -p: No Platform Specified!" >&2
 				return 1
 			}
 			PLATFORM=${OPTARG}
@@ -187,91 +183,69 @@ genesis_juicer() {
 			return 2
 		;;
 		\?)
-			echo "(ERROR) Invalid Option [${OPTARG}] !" >&2
-			echo >&2
-			echo "See [ $0 -h ] for help."
+			echo "(ERROR) Invalid Option: [${OPTARG}] !" >&2
 			return 1
 		;;
 		:)
-			[ "${OPTARG}" = "c" ] && {
-				echo "(ERROR) No Cut Time Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
-				return 1
-			}
-			[ "${OPTARG}" = "f" ] && {
-				echo "(ERROR) No Recording Saving Path Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
-				return 1
-			}
-			[ "${OPTARG}" = "o" ] && {
-				echo "(ERROR) No Log Saving Path Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
-				return 1
-			}
-			[ "${OPTARG}" = "p" ] && {
-				echo "(ERROR) No Platform Specified!" >&2
-				echo >&2
-				echo "See [ $0 -h ] for help." >&2
-				return 1
-			}
+			case ${OPTARG} in
+			c) echo "(ERROR) -c: No Cut Time Specified!" >&2 ;;
+			f) echo "(ERROR) -f: No Recording Saving Path Specified!" >&2 ;;
+			o) echo "(ERROR) -o: No Log Saving Path Specified!" >&2 ;;
+			p) echo "(ERROR) -p: No Platform Specified!" >&2 ;;
+			esac
+			return 1
 		;;
 		esac
 	done
 	shift $((OPTIND - 1))
+	[ -n "$2" ] && {
+		shift 1
+		echo "(ERROR) Invalid Inputs: [$*] !" >&2
+		return 1
+	}
 	[ -n "$1" ] && MODEL=$1
 
 	defaulting_args
 
 	[ -z "${MODEL}" ] && {
 		echo "(ERROR) No Username or URL Specified!" >&2
-		echo >&2
-		echo "See [ $0 -h ] for help." >&2
 		return 1
 	}
 	# Assume ${MODEL} contain some URL form, process & cut invalid chars.
 	local _MODEL="$(echo "${MODEL}" \
 		| tr '[:upper:]' '[:lower:]' \
-		| grep -oE 'http[s]?://[a-zA-Z]?+[.]?[a-zA-Z]+[.][a-zA-Z]+[/][^ /]+' \
+		| grep -oE 'http[s]?://[a-z0-9-]?+[.]?[a-z0-9-]+[.][a-z]+[/][^ /]+' \
 		| cut -d '/' -f4 \
-		| grep -oE '[a-zA-Z0-9_-]+' \
+		| grep -oE '[a-z0-9_-]+' \
 		| head -n 1)"
-	[ -n "${_MODEL}" ] && MODEL="${_MODEL}"
+	[ -n "${_MODEL}" ] && MODEL=${_MODEL}
 	# If ${MODEL} not URL form, cut invalid chars.
-	[ -z "${_MODEL}" ] && local _MODEL="$(echo "${MODEL}" | tr '[:upper:]' '[:lower:]'| grep -oE '[a-zA-Z0-9_-]+' | head -n 1)"
+	[ -z "${_MODEL}" ] && local _MODEL="$(echo "${MODEL}" | tr '[:upper:]' '[:lower:]'| grep -oE '[a-z0-9_-]+' | head -n 1)"
 	[ -z "${_MODEL}" ] && {
 		echo "(ERROR) Invalid Username or URL! [${MODEL}]" >&2
-		echo >&2
-		echo "See [ $0 -h ] for help." >&2
 		return 1
 	}
-	[ -n "${_MODEL}" ] && MODEL="${_MODEL}"
+	[ -n "${_MODEL}" ] && MODEL=${_MODEL}
 
 	PLATFORM=$(echo "${PLATFORM}" | tr '[:upper:]' '[:lower:]')
 	case ${PLATFORM} in
-		chaturbate|ctb|cb)
-			PLATFORM=chaturbate
-			LINK="https://chaturbate.com/api/chatvideocontext/${MODEL}/" # Must keep " / " at the end
-		;;
-		stripchat|stc|sc|st)
-			PLATFORM=stripchat
-			LINK="https://stripchat.com/api/front/v2/models/username/${MODEL}/cam"
-		;;
-		*)
-			echo "(ERROR) Unknown Platform: [${PLATFORM}] !" >&2
-			echo >&2
-			echo "See [ $0 -h ] for help." >&2
-			return 1
-		;;
+	chaturbate|ctb|cb)
+		PLATFORM=chaturbate
+		LINK="https://chaturbate.com/api/chatvideocontext/${MODEL}/" # Must keep " / " at the end
+	;;
+	stripchat|stc|sc|st)
+		PLATFORM=stripchat
+		LINK="https://stripchat.com/api/front/v2/models/username/${MODEL}/cam"
+	;;
+	*)
+		echo "(ERROR) Unknown Platform: [${PLATFORM}] !" >&2
+		return 1
+	;;
 	esac
 
 	CUT_TIME=$(echo "${CUT_TIME}" | cut -c -9) #Cut to INT range
 	[ -z "$(echo "${CUT_TIME}" | grep -oE '^[0-9]+$')" ] && {
 		echo "(ERROR) Cut Time Must be Some INT Number! [${CUT_TIME}]" >&2
-		echo >&2
-		echo "See [ $0 -h ] for help." >&2
 		return 1
 	}
 
@@ -287,20 +261,28 @@ utils() {
 	case $1 in
 	connect_status)
 		curl "$2" \
-		-4 -L -s -I \
-		-A "${UA}" \
-		--compressed \
-		--connect-timeout 5 --retry 5 --retry-delay 2 \
-		2>/dev/null | head -n 1 | grep -oE '[0-9]{3}' \
+			-4 -L -s -I \
+			-A "${UA}" \
+			--compressed \
+			--connect-timeout 5 --retry 5 --retry-delay 2 \
+			2>/dev/null | head -n 1 | grep -oE '[0-9]{3}' \
 		|| echo 000
 	;;
 	connect_dump)
 		curl "$2" \
-		-4 -L -s -i\
-		-A "${UA}" \
-		--compressed \
-		--connect-timeout 5 --retry 5 --retry-delay 2 \
-		2>/dev/null | tr -d '\r'
+			-4 -L -s -i\
+			-A "${UA}" \
+			--compressed \
+			--connect-timeout 5 --retry 5 --retry-delay 2 \
+			2>/dev/null | tr -d '\r'
+	;;
+	# Reuse results of connect_dump to get HTTP status code at the time.
+	dump2status)
+		echo "$2" \
+			| head -n 1 \
+			| cut -c -15 \
+			| grep -oE '[0-9]{3}' \
+		|| echo 000
 	;;
 	# RE-Implement RANDOM NUM Tool on POSIX Shell (B/E).
 	random_num)
@@ -308,12 +290,19 @@ utils() {
 		local SNUM=$2 # INT. Must >= 0. Small-end of Random Num you want.
 		local BNUM=$3 # INT. Must < (2^32)/2. Big-end of Random Num you want.
 		local BNUM=$(( BNUM + 1 )) # Add ${BNUM} to the pool, make method become B/E Random.
-		local RSEED=$(od -An -N4 -tu4 /dev/urandom) # Gen random num B/E 0 - (2^32-1) as Seed. 
+		local RSEED=$(od -An -N4 -tu4 /dev/urandom) # Gen random num B/E 0 - (2^32-1) as Seed.
 		local SEEDMIN=$(( 4294967295 % ( BNUM - SNUM ) )) # ${SEED} <= ${SEEDMIN} will cause redundant modulus.
 		while [ "${RSEED}" -le "${SEEDMIN}" ]; do
 			local RSEED=$(od -An -N4 -tu4 /dev/urandom) # If ${SEED} <= ${SEEDMIN}, Reshake ${RSEED} till isn't.
 		done
 		echo $(( RSEED % ( BNUM - SNUM ) + SNUM )) # Format Same as $((RANDOM)) in Bash.
+	;;
+	check_depend)
+		command -v "$2" 1>/dev/null 2>&1 || {
+			echo "(ERROR) Command [$2] not found! Check \$PATH or install it." >&2
+			return 1
+		}
+		return 0
 	;;
 	esac
 
@@ -321,14 +310,13 @@ utils() {
 
 init_dir() {
 	printf '%s\n' "$@" | while IFS='' read -r DIR ; do
-		[ -z "${DIR%"/"}" ] && echo "(ERROR) Root directory are not allowed!" >&2 && return 1
+		[ -z "${DIR%"/"}" ] && { echo "(ERROR) Root directory are not allowed!" >&2; return 1; }
 		mkdir -p "${DIR}" 1>/dev/null 2>&1
-		[ ! -e "${DIR}" ] && echo "(ERROR) Unable to create directory [${DIR}] !" >&2 && return 1
-		[ ! -d "${DIR}" ] && echo "(ERROR) [${DIR}] is not a directory!" >&2 && return 1
-		[ ! -w "${DIR}" ] && echo "(ERROR) Cannot Write To [${DIR}/] !" >&2 && return 1
+		[ ! -e "${DIR}" ] && { echo "(ERROR) Unable to create directory [${DIR}] !" >&2; return 1; }
+		[ ! -d "${DIR}" ] && { echo "(ERROR) [${DIR}] is not a directory!" >&2; return 1; }
+		[ ! -w "${DIR}" ] && { echo "(ERROR) Cannot Write To [${DIR}/] !" >&2; return 1; }
 		true
 	done
-	return $?
 }
 
 # Sleep time (s) before initial request to server. Range better EQ to watchdog().while.case.1).echo .
@@ -349,22 +337,19 @@ edging() {
 	sleep ${EDGING_TIME}
 
 	echo "Edging Enough...Cum..."
-	echo
 }
 
 # Core platform methods.
 # Fetch ${STREAM_LINK_GENERIC} & ${STREAM_LINK}, show them & return 0.
 # If no ${STREAM_LINK}, return 1.
-# If Can't find chatroom at all, return 2.
+# If chatroom is changed to new name, return 2.
+# If can't find chatroom at all, return 3.
 fetch_m3u() {
-
-	rm -f "${LOG_PATH}/${MODEL}-${PLATFORM}.online"
 	unset STREAM_LINK_GENERIC STREAM_LINK
 
-	[ -z "${MODEL_NEW_NAME}" ] && local CONNECT_DUMP="$(utils connect_dump "${LINK}")"
-	[ -n "${MODEL_NEW_NAME}" ] && local CONNECT_DUMP="$(utils connect_dump "${LINK_NEW_NAME}")"
-	# Reuse ${CONNECT_DUMP} to get HTTP status code at the time.
-	local CONNECT_STATUS="$(echo "${CONNECT_DUMP}" | head -n 1 | cut -c -15 | grep -oE '[0-9]{3}' || echo 000)"
+	[ -n "${LINK_NEW_NAME}" ] && local CONNECT_DUMP="$(utils connect_dump "${LINK_NEW_NAME}")"
+	[ -z "${LINK_NEW_NAME}" ] && local CONNECT_DUMP="$(utils connect_dump "${LINK}")"
+	local CONNECT_STATUS="$(utils dump2status "${CONNECT_DUMP}")"
 	case ${CONNECT_STATUS} in
 	2*|3*)
 		# Do nothing. leave to platform method to deal with.
@@ -394,31 +379,29 @@ fetch_m3u() {
 	case ${PLATFORM} in
 	chaturbate)
 		# Check if Model change to new name
-		if [ "${CONNECT_STATUS}" = 404 ]; then
-			MODEL_NEW_NAME=$(utils connect_dump "https://chaturbate.com/${MODEL}/")
-			local CONNECT_STATUS="$(echo "${MODEL_NEW_NAME}" | head -n 1 | cut -c -15 | grep -oE '[0-9]{3}' || echo 000)"
-			MODEL_NEW_NAME=$(echo "${MODEL_NEW_NAME}" | grep -oE 'location:[ ]?/[^/]+/' | head -n 1 | cut -d '/' -f2)
+		[ "${CONNECT_STATUS}" = 404 ] && {
+			local CONNECT_DUMP="$(utils connect_dump "https://chaturbate.com/${MODEL}/")"
+			local CONNECT_STATUS="$(utils dump2status "${CONNECT_DUMP}")"
+			MODEL_NEW_NAME=$(echo "${CONNECT_DUMP}" | grep -oE 'location:[ ]?/[^/]+/' | head -n 1 | cut -d '/' -f2)
 			[ -n "${MODEL_NEW_NAME}" ] && {
-				echo "[$(date "+%Y%m%d-%H%M%S")] (WARNING) [${MODEL}] has changed her name to [${MODEL_NEW_NAME}]. [${CONNECT_STATUS}]" >&2
 				LINK_NEW_NAME=$(echo "${LINK}" | sed "s|${MODEL}|${MODEL_NEW_NAME}|g")
-				sleep 5
-				local CONNECT_DUMP="$(utils connect_dump "${LINK_NEW_NAME}")"
-				local CONNECT_STATUS="$(echo "${CONNECT_DUMP}" | head -n 1 | cut -c -15 | grep -oE '[0-9]{3}' || echo 000)"
+				echo "[$(date "+%Y%m%d-%H%M%S")] (WARNING) [${MODEL}] has changed her name to [${MODEL_NEW_NAME}]. [${CONNECT_STATUS}]" >&2
+				return 2
 			}
 			[ -z "${MODEL_NEW_NAME}" ] && {
 				echo "(ERROR) Can't find [${MODEL}] on [${PLATFORM}]. [${CONNECT_STATUS}]" >&2
-				return 2
+				return 3
 			}
-		else
-			[ -n "${MODEL_NEW_NAME}" ] \
-				&& echo "[$(date "+%Y%m%d-%H%M%S")] (WARNING) [${MODEL}] has changed her name to [${MODEL_NEW_NAME}]." >&2
-		fi
+		}
+
+		[ -n "${MODEL_NEW_NAME}" ] \
+			&& echo "[$(date "+%Y%m%d-%H%M%S")] (NOTICE) Due to name change, [${MODEL_NEW_NAME}] will now be used for actual requests." >&2
 
 		# Check if online:
 		local ROOM_STATUS="$(echo "${CONNECT_DUMP}" | grep -oE '"room_status":[ ]?"[^"]+"' | cut -d '"' -f4)"
 		if [ -n "$(echo "${CONNECT_DUMP}" | grep -oE 'http[s]?://edge[^ ]+\.m3u8')" ]; then
 			STREAM_LINK_GENERIC=$(echo "${CONNECT_DUMP}" | grep -oE 'http[s]?://edge[^ ]+\.m3u8' | head -n 1)
-			STREAM_LINK=$(utils connect_dump "${STREAM_LINK_GENERIC}" | tail -n 1)
+			STREAM_LINK="$(utils connect_dump "${STREAM_LINK_GENERIC}" | tail -n 1)"
 			[ -n "${STREAM_LINK}" ] && STREAM_LINK=$(echo "${STREAM_LINK_GENERIC}" | sed 's|playlist.m3u8.*||')${STREAM_LINK}
 		else
 			echo "[$(date "+%Y%m%d-%H%M%S")] [${MODEL}] is ${ROOM_STATUS} now. [${CONNECT_STATUS}]"
@@ -426,15 +409,16 @@ fetch_m3u() {
 		fi
 	;;
 	stripchat)
-		if [ "${CONNECT_STATUS}" = 404 ]; then
+		[ "${CONNECT_STATUS}" = 404 ] && {
 			# TODO: Name changing detection for Stripchat method.
-			echo "(ERROR) Can't find [${MODEL}] on [${PLATFORM}]. [${CONNECT_STATUS}]" >&2 && return 2
-		fi
+			echo "(ERROR) Can't find [${MODEL}] on [${PLATFORM}]. [${CONNECT_STATUS}]" >&2
+			return 3
+		}
 
 		if [ -n "$(echo "${CONNECT_DUMP}" | grep -o '"isCamAvailable":true')" ]; then
 			local STREAMNAME="$(echo "${CONNECT_DUMP}" | grep '"streamName":' | head -n 1 | sed 's|.*"streamName":"||'| sed 's|".*||')"
 			STREAM_LINK_GENERIC="https://edge-hls.doppiocdn.com/hls/${STREAMNAME}/master/${STREAMNAME}_auto.m3u8"
-			STREAM_LINK=$(utils connect_dump "${STREAM_LINK_GENERIC}" | grep -oE 'http[s]?://[^ ]+\.m3u8' | head -n 1)
+			STREAM_LINK="$(utils connect_dump "${STREAM_LINK_GENERIC}" | grep -oE 'http[s]?://[^ ]+\.m3u8' | head -n 1)"
 		else
 			echo "[$(date "+%Y%m%d-%H%M%S")] [${MODEL}] is offline/private now. [${CONNECT_STATUS}]"
 			return 1
@@ -469,30 +453,31 @@ grab_stream() {
 		echo
 	} >> ${FFMPEG_LOGFILE}
 
-	# Core FFmpeg method. 
+	# Core FFmpeg method.
 	# After making any changes, must confirm the compatibility of tailored FFmpeg in Dockerfile.
 	ffmpeg \
-	-user_agent "${UA}" \
-	-i "${STREAM_LINK}" \
-	-c copy \
-	$( [ -z "${DEBUG_MODE}" ] && \
-		printf "%s" "-loglevel warning" \
-	) \
-	$( [ "${CUT_TIME}" = 0 ] \
-		&& printf "%s" "
-			${SAVE_PATH}/${MODEL}-${CAPTURE_TIME}.mkv" \
-		|| printf "%s" "
-			-f segment \
-			-segment_time ${CUT_TIME} \
-			-segment_start_number 1 \
-			-reset_timestamps 1 \
-			${SAVE_PATH}/${MODEL}-${CAPTURE_TIME}_%03d.mkv" \
-	) \
+		-user_agent "${UA}" \
+		-i "${STREAM_LINK}" \
+		-c copy \
+		$( [ -z "${DEBUG_MODE}" ] && \
+			printf "%s" "-loglevel warning" \
+		) \
+		$( [ "${CUT_TIME}" = 0 ] \
+			&& printf "%s" "
+				${SAVE_PATH}/${MODEL}-${CAPTURE_TIME}.mkv" \
+			|| printf "%s" "
+				-f segment \
+				-segment_time ${CUT_TIME} \
+				-segment_start_number 1 \
+				-reset_timestamps 1 \
+				${SAVE_PATH}/${MODEL}-${CAPTURE_TIME}_%03d.mkv" \
+		) \
 	>> ${FFMPEG_LOGFILE} 2>&1
 }
 
 watchdog() {
 	while true; do
+		rm -f "${LOG_PATH}/${MODEL}-${PLATFORM}.online" # Init online flag file status
 		fetch_m3u
 		# See the notes above fetch_m3u() .
 		case $? in
@@ -527,12 +512,13 @@ watchdog() {
 		1)
 			# Too short time may cause the platform to enable CAPTCHA to you.
 			echo "[$(date "+%Y%m%d-%H%M%S")] Sleep for around 10 min..."
-			sleep $(utils random_num 480 720) # Random num B/E 480 - 720
+			sleep $(utils random_num 480 720)
 		;;
-		2)
+		2) sleep $(utils random_num 4 6) ;;
+		3)
 			# Too short time may cause the platform to enable CAPTCHA to you.
 			echo "[$(date "+%Y%m%d-%H%M%S")] Sleep for around 1 hr..."
-			sleep $(utils random_num 3300 3900) # Random num B/E 3300 - 3900
+			sleep $(utils random_num 3300 3900)
 		;;
 		*)
 			echo "Logic is dead. It's tinfoil hat time."
@@ -550,7 +536,9 @@ watchdog() {
 		exit 0
 	}' HUP INT QUIT TERM
 
+	echo
 	doc neon
+	echo
 
 	genesis_juicer "$@"
 	case $? in
@@ -558,10 +546,10 @@ watchdog() {
 		echo "Simping Streamer: [${MODEL}] (${PLATFORM})"
 		echo
 	;;
-	2)
-		exit 0
-	;;
-	1|*)
+	2) echo; exit 0 ;;
+	*) 
+		echo >&2
+		echo "See [ $0 -h ] for help." >&2
 		echo >&2
 		exit 1
 	;;
@@ -569,13 +557,25 @@ watchdog() {
 
 	[ "${DEBUG_MODE}" = "1" ] && set -x # Debug Mode
 
-	if [ "${LINK_MODE}" = "1" ]; then
-		fetch_m3u && { echo; exit 0; } || { echo >&2; exit 1; }
-	fi
+	utils check_depend curl || { echo >&2; exit 1; }
+
+	[ "${LINK_MODE}" = "1" ] && {
+		fetch_m3u
+		case $? in
+		2)
+			sleep $(utils random_num 4 6)
+			fetch_m3u && { echo; exit 0; } || { echo >&2; exit 1; }
+		;;
+		0) echo; exit 0 ;;
+		*) echo >&2; exit 1 ;;
+		esac
+	}
+
+	utils check_depend ffmpeg || { echo >&2; exit 1; }
 
 	init_dir "${SAVE_PATH}" "${LOG_PATH}" || { echo >&2; exit 1; }
 
-	[ "${EDGING_MODE}" = "1" ] && edging
+	[ "${EDGING_MODE}" = "1" ] && { edging; echo; }
 
 	watchdog 2>&1 | tee -a "${LOG_PATH}/${MODEL}-${PLATFORM}.log" 2>/dev/null
 }

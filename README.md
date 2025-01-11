@@ -1,30 +1,20 @@
 <div align="center"><h1>Chaturbate-Grabber - Simping Stream from CB & SC</h1></div>
 
-<br>
-
-<div align="center"><h3><code>Chaturbate-Grabber</code> / <code>CtbCap</code> is a Easy to use, Extremely lightweight, yet Functional and Reliable <code>Chaturbate</code> & <code>StripChat</code> Recorder and watch bot.</h3></div>
+<div align="center"><p><code>Chaturbate-Grabber</code> | <code>CtbCap</code> Is a functional, reliable, yet extremely easy to use and lightweight <strong>Recorder</strong> and <strong>Watchbot</strong> for <code>Chaturbate</code> & <code>StripChat</code>.</p></div>
 
 <div align="center"><p><strong><a href="#command-examples">Command Examples</a></strong></p></div>
 
-<br>
-
 <div align="center"><h2>Key Advantages:</h2></div>
 
-<br>
+- **Lightweight** - Written by most basic Shell Scripts with full POSIX compatibility. [Pythonless](https://m.media-amazon.com/images/I/71CmeuB3XXL._AC_UF1000,1000_QL80_.jpg), but far superior performance and energy efficiency.
 
-- ### **Lightweight** - [Pythonless](https://m.media-amazon.com/images/I/71CmeuB3XXL._AC_UF1000,1000_QL80_.jpg), but far superior Performance and Energy efficiency. Written by most basic `sh` syntax with full POSIX compatibility.
+- **All platforms available** - All functions are available with just require `curl` & `ffmpeg`.
 
-- ### **All platforms available** - All functions are available with just require `curl` & `ffmpeg`.
+    > Considering all the things mentioned and their platform versatility, this pretty much means you can run it on any device with only need internet connection: your phone, refrigerator, slipper, TV remote, [buttplug](https://news.berkeley.edu/wp-content/uploads/2017/10/SaguaroCardon750.jpg), even [your boss's wig](https://m.media-amazon.com/images/I/71+B81wFylL._SX466_.jpg).
 
-    #### Considering all the things mentioned and their platform versatility, this pretty much means you can run it on any device with only need internet connection: your Phone, Refrigerator, Slipper, TV remote, [Buttplug](https://news.berkeley.edu/wp-content/uploads/2017/10/SaguaroCardon750.jpg), even [your boss's wig](https://m.media-amazon.com/images/I/71+B81wFylL._SX466_.jpg).
-
-- ### **Multifunction** - Auto Recording, Auto Monitoring, Auto Stopping, Large-scale deploy... Just find by yourself.
-
-<br>
+- **Multifunction** - Auto Recording; Auto Monitoring; Auto Stopping; Large-Scale Deploy... Just find by yourself.
 
 <div align="center"><h2>Usage | Deploy:</h2></div>
-
-<br>
 
 ### One-Command to GO:
 
@@ -35,19 +25,16 @@
       ```shell
       sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -h
       ```
-      > Options follows @. e.g `sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -el -f ~ yourwife`
+      > Put the options after the `@`, e.g:\
+      > `sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -ef ~/rec your_mom`
 
       > **Termux is Supported.**
 
-<br>
-
 ##
-
-<br>
 
 ### Raw Environment:
 
-> Traditional way to run. All platforms available. - running directly on naked system environment, dependencies will load into the system.
+> Traditional way to run. All platforms available - Running directly on naked system environment, dependencies will load into your OS.
 
 > **Termux is Supported.**
 
@@ -65,7 +52,7 @@
       ./ctbcap
       ```
 
-### Follow update:
+### Follow Update:
 
   1. Go to local repo:
 
@@ -79,16 +66,11 @@
       git pull --rebase
       ```
 
-
-<br>
-
 ##
 
-<br>
+### Docker Container (Recommend) :
 
-### Docker Container (Recommend):
-
-> if you're using `x86`- and such platforms that have good support for Docker and similar, I highly recommend this method. More serious, High-Availability, Everything runs in containers / easily configures a lot of models at the same time.
+> If you're using such platforms that have good support for Docker or similar, I highly recommend to use this method: More serious; High-Availability; Everything runs in containers; Easily configures lot of chatrooms at the same time.
 
   1. Clone this repo to your local:
 
@@ -96,7 +78,7 @@
       git clone https://github.com/KFERMercer/chaturbate-grabber.git && cd chaturbate-grabber
       ```
 
-  2. Install & trigger some Docker-like shit in your OS.
+  2. Install & trigger some Docker-like shit in your OS:
 
       ```shell
       # <https://www.google.com/search?q=please+tell+me+how+to+use+docker+I+will+do+anything>
@@ -109,22 +91,26 @@
       ```
       > It will build a minimal FFmpeg tailored for ctbcap on-the-fly in Docker for minimizes the image size. (~ 18MB)
 
-      > You can also chose Pre-built FFmpeg from Alpine repos to avoids compilation on low-power devices. But it will increases image size significantly. (~ 140MB)<br>
-      > Use this command to use Pre-built FFmpeg:<br>
-      > `docker build --build-arg BUILD_TARGET=fat --target fat -t ctbcap .`
+      > You can also chose Pre-built FFmpeg from Alpine repos to avoids compilation on low-power devices. But it will increases image size significantly. (~ 140MB)\
+      > Use this command to use pre-built FFmpeg:\
+      > `docker build --build-arg BUILD_TARGET=fat --target fat -t ctbcap ./`
 
   4. RUN SIMP RUN!
 
-     - Run once:
+     - Run once (Docker CLI) :
 
         ```shell
-        docker run -it --rm \
-        -v /path/to/recdir:/save \
-        -v /path/to/logdir:/log \
+        docker run -t --rm \
+        -u $(id -u):$(id -g) \
+        -v </path/to/recdir>:/save \
+        -v </path/to/logdir>:/log \
         -e TZ=UTC \
         ctbcap -h
         ```
-        > For more Container Arguments, See: [Container Arguments](#container-arguments)
+        > Option `-u <UID>:<GID>` allows you to specify the user (UID) and group (GID) that the container will run as. For example, `-u 65534:65534` will run the container as the 'nobody'. If you don't specify `-u`, the container will running as `1000:1000`.\
+        > `-u $(id -u):$(id -g)` Will use your current UID and GID.
+
+        > For more container arguments, see: [Container Arguments](#container-arguments)
 
      - **Run as Daemon (man!!)**:
 
@@ -145,7 +131,7 @@
           docker compose down --remove-orphans
           ```
 
-### Follow update:
+### Follow Update:
 
   1. Go to local repo:
 
@@ -159,7 +145,7 @@
       git pull --rebase
       ```
 
-  3. Rebuild image & upgrade container :
+  3. Rebuild image & upgrade containers:
 
       ```shell
       # Rebuild image
@@ -169,118 +155,108 @@
       docker compose up -d --remove-orphans
       ```
 
-<br>
-
 ### Container Arguments:
 
-|  Arguments | Value Type | Value Examples | Default | Necessary to Change |
-| :-: | :-: | :- | :-: | :-: |
-| MODEL | Streamer's username <br> or <br> chatroom url | `tri80085` <br> `s1mp_L0r3-87` <br> `https://chaturbate.com/your_sister` <br> `https://stripchat.com/dicklessman` <br> ... | - | Yes |
-| PLATFORM | `chaturbate`  <br> or <br> `stripchat` | `chaturbate` <br> `stripchat` | `chaturbate` | Yes <br> if not Chaturbate |
-| CUT_TIME | INT Number | `0` <br> `1800` <br> `1801` <br> ... | `3600` | No |
+| Arguments | Value Type | Value Examples | Default | Necessary to Change |
+| :-: | :-: | :- | :- | :-: |
+| MODEL | Streamer's Username <br> or <br> Chatroom URL | `tri80085` <br> `s1mp_L0r3-87` <br> `https://chaturbate.com/your_sister` <br> `https://stripchat.com/dicklessman` <br> ... | - | Yes |
+| PLATFORM | `chaturbate` <br> or <br> `stripchat` | `chaturbate` <br> `stripchat` | `chaturbate` | Yes <br> if not Chaturbate |
+| CUT_TIME | INT | `0` <br> `911` <br> `6324` <br> ... | `3600` | No |
 | TZ | [TZ identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) | `UTC` <br> `Asia/Shanghai` <br> `Africa/Harare` <br> ... | `UTC` | No <br> if you [live in Greenwich](https://www.royalgreenwich.gov.uk/info/200258/parking_transport_and_streets/810/find_a_public_toilet_in_royal_greenwich) |
-| EDGING_MODE | Inactive if not <br> `1` | `1` <br> `0` <br> ... | `uncles make me pee white` | No |
-| DEBUG_MODE | Inactive if not <br> `1` | `1` <br> `-999` <br> `i was born form my sis` <br> `Whatever` | `your mom is so hot` | No |
-
-<br>
+| EDGING_MODE | Inactive if not `1` | `1` <br> `12306` <br> ... | `uncles make me pee white` | No |
+| DEBUG_MODE | Inactive if not `1` | `1` <br> `-999` <br> `i was born from my sis` <br> ... | `your mom is so hot` | No |
 
 <div align="center"><h2>Command Examples</h2></div>
 
-<br>
-
-> Get Help for Commands:
+> ### Get help for commands:
 
 ```shell
-# Raw ENV
+# Raw ENV:
 ./ctbcap -h
 
-# In One-Command run:
+# One-Command Run:
 sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -h
 
-# Docker run
-docker run -it --rm ctbcap -h
+# Docker CLI:
+docker run -t --rm ctbcap -h
 ```
 
-<br>
-<br>
-
-> Simping your girl with nonstop:
+> ### Show version & runtime info:
 
 ```shell
-# Raw ENV
-./ctbcap -f /path/to/recdir your_girl
+# Raw ENV:
+./ctbcap -v
 
-# In One-Command run:
-sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f /path/to/recdir your_girl
+# One-Command Run:
+sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -v
 
-# Docker run
-docker run -it --rm -v /path/to/recdir:/save ctbcap your_girl
+# Docker CLI:
+docker run -t --rm -u <UID>:<GID> ctbcap -v
 ```
 
-<br>
-<br>
-
-> Simping your girl's stream and don't cut the file (cut the files every 3600 seconds by default):
+> ### Simping your girl with nonstop:
 
 ```shell
-# Raw ENV
-./ctbcap -f /path/to/recdir -c 0 your_girl
+# Raw ENV:
+./ctbcap -f </path/to/recdir> your_girl
 
-# In One-Command run:
-sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f /path/to/recdir -c 0 your_girl
+# One-Command Run:
+sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f </path/to/recdir> your_girl
 
-# Docker run
-docker run -it --rm -v /path/to/recdir:/save ctbcap -c 0 your_girl
+# Docker CLI:
+docker run -t --rm -u <UID>:<GID> -v </path/to/recdir>:/save ctbcap your_girl
 ```
 
-<br>
-<br>
-
-> Simping your girl's stream and cut the files by every 1800 seconds (30 min):
+> ### Simping your girl's stream and don't cut the file (cut the files every 3600 seconds by default) :
 
 ```shell
-# Raw ENV
-./ctbcap -f /path/to/recdir -c 1800 your_girl
+# Raw ENV:
+./ctbcap -f </path/to/recdir> -c 0 your_girl
 
-# In One-Command run:
-sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f /path/to/recdir -c 1800 your_girl
+# One-Command Run:
+sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f </path/to/recdir> -c 0 your_girl
 
-# Docker run
-docker run -it --rm -v /path/to/recdir:/save ctbcap -c 1800 your_girl
+# Docker CLI:
+docker run -t --rm -u <UID>:<GID> -v </path/to/recdir>:/save ctbcap -c 0 your_girl
 ```
 
-<br>
-<br>
-
-> Just wanna check if your girl is online:
+> ### Simping your girl's stream and cut the files by every 1800 seconds (30 min) :
 
 ```shell
-# Raw ENV
+# Raw ENV:
+./ctbcap -f </path/to/recdir> -c 1800 your_girl
+
+# One-Command Run:
+sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -f </path/to/recdir> -c 1800 your_girl
+
+# Docker CLI:
+docker run -t --rm -u <UID>:<GID> -v </path/to/recdir>:/save ctbcap -c 1800 your_girl
+```
+
+> ### Just wanna check if your girl is online:
+
+```shell
+# Raw ENV:
 ./ctbcap -l your_girl
 
-# In One-Command run:
+# One-Command Run:
 sh -c "$(curl -s -L https://raw.githubusercontent.com/KFERMercer/chaturbate-grabber/master/ctbcap)" @ -l your_girl
 
-# Docker run
-docker run -it --rm ctbcap -l your_girl
+# Docker CLI:
+docker run -t --rm ctbcap -l your_girl
 ```
 
-<br>
-<br>
-
-> Check the status of compose daemons:
+> ### Check the status of compose daemons:
 
 ```shell
 # All daemons:
-docker compose -f /path/to/local/repo/compose.yml logs -f
+docker compose -f </path/to/local/repo/compose.yml> logs -f
 
 # Single model:
-docker compose -f /path/to/local/repo/compose.yml logs -f your_girl
+docker compose -f </path/to/local/repo/compose.yml> logs -f your_girl
 ```
 
-<div align="center"><h2>Branches Explains</h2></div>
-
-<br>
+<div align="center"><h2>Branch Description</h2></div>
 
 [`master`](https://github.com/KFERMercer/chaturbate-grabber/tree/master): Main Branch. Use this branch for practical purposes.
 
